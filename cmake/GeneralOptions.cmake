@@ -1,2 +1,3 @@
 
-set(APP_NAME  "CCU")
+set(APP_NAME  "GCS")
+set(APP_VERSION 1.0)

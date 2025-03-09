@@ -1,7 +1,7 @@
 import QtQuick
 
 Rectangle {
-    id: ccuSwitchRoot
+    id: gcsSwitchRoot
     height: 20
     width: 20
     radius: height / 2
@@ -16,8 +16,8 @@ Rectangle {
     property bool isActive:             false
     Rectangle {
         id: slider
-        height: ccuSwitchRoot.height - 8
-        width: ccuSwitchRoot.width / 2
+        height: gcsSwitchRoot.height - 8
+        width: gcsSwitchRoot.width / 2
         radius: height / 2
         color: conceptColor
         anchors.verticalCenter: parent.verticalCenter

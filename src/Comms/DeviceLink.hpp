@@ -1,5 +1,5 @@
-#ifndef __DEVICE_LINK_HPP__
-#define __DEVICE_LINK_HPP__
+#ifndef DEVICE_LINK_HPP
+#define DEVICE_LINK_HPP
 
 #include <QObject>
 #include <QTimer>

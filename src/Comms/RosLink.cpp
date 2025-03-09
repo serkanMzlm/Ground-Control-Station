@@ -1,25 +1,19 @@
 #include "RosLink.hpp"
 
-ROSLink::ROSLink(QObject *parent):
-    QObject(parent), Node("ros_link")
+ROSLink::ROSLink(QObject *parent) : QObject(parent), Node("ros_link")
 {
-    pub.joy  = this->create_publisher<joyMsg>("joy",10);
-    pub.point = this->create_publisher<pointMsg>("point",10);
-    pub.button = this->create_publisher<int16Msg>("button",10);
+    pub.point = this->create_publisher<pointMsg>("point", 10);
+    pub.button = this->create_publisher<int16Msg>("button", 10);
 }
 
-void ROSLink::joyCallback()
-{
-}
-
-void ROSLink::buttonCallback(int number)
+void ROSLink::onButtonChanged(int button_num)
 {
     int16Msg msg;
-    msg.data = number;
+    msg.data = button_num;
     pub.button->publish(msg);
 }
 
-void ROSLink::pointCallback(int x, int y)
+void ROSLink::onPointStateChanged(int x, int y)
 {
     pointMsg msg;
     msg.x = x;
@@ -30,7 +24,7 @@ void ROSLink::pointCallback(int x, int y)
 
 ROSLink::~ROSLink()
 {
-    if(rclcpp::ok())
+    if (rclcpp::ok())
     {
         rclcpp::shutdown();
     }

@@ -3,7 +3,7 @@ import QtQuick.Dialogs
 import Qt5Compat.GraphicalEffects
 
 Item {
-    id: ccuImageRoot
+    id: gcsImageRoot
 
     property color color: "white"
     property bool overlayEnabled: true
@@ -38,7 +38,7 @@ Item {
         anchors.fill:       image
         source:             image
         color:              parent.color
-        visible:            ccuImageRoot.overlayEnabled
+        visible:            gcsImageRoot.overlayEnabled
     }
 
     MouseArea {

@@ -9,7 +9,7 @@ import QtPositioning
 import QtQuick.Controls
 import QtLocation
 
-import CCU.ROSLink 1.0
+import GCS.ROSManager 1.0
 
 ApplicationWindow {
     id: mainWindow
@@ -18,7 +18,7 @@ ApplicationWindow {
     width: mainWindow.screen.width * 0.5
     height: mainWindow.screen.height * 0.5
 
-    minimumWidth:  mainWindow.screen.width * 0.5
+    minimumWidth: mainWindow.screen.width * 0.5
     minimumHeight: mainWindow.screen.height * 0.5
 
     visible: true
@@ -33,7 +33,7 @@ ApplicationWindow {
     property color buttonColor: isDarkTheme ? "#444648" : "#cccbc8"
     property color toolbarColor: isDarkTheme ? "#2c2e30" : "#cccbc8"
     property color conceptColor: isDarkTheme ? "#FF6600" : "#006fff"
-    property color backgroundColor:  isDarkTheme ? "#1D1F21" : "#fffefb"
+    property color backgroundColor: isDarkTheme ? "#1D1F21" : "#fffefb"
 
     property bool isMaximized: false
     property bool mapVisible: false
@@ -45,8 +45,8 @@ ApplicationWindow {
         id: toolbar
     }
 
-    ROSLink {
-        id: rosLink
+    ROSManager {
+        id: _ros2
     }
 
     MenuPanel {
@@ -85,20 +85,20 @@ ApplicationWindow {
             center: QtPositioning.coordinate(39.92, 32.8)
             zoomLevel: 10
             onZoomLevelChanged: {
-                marker.radius = 1500.0 / Math.pow(2, (map.zoomLevel - 10));
+                marker.radius = 1500.0 / Math.pow(2, (map.zoomLevel - 10))
             }
 
             WheelHandler {
                 id: wheel
                 acceptedDevices: PointerDevice.Mouse
-                rotationScale: 1/120
+                rotationScale: 1 / 120
                 property: "zoomLevel"
             }
 
             DragHandler {
                 id: drag
                 target: null
-                onTranslationChanged: (delta) => map.pan(-delta.x, -delta.y)
+                onTranslationChanged: delta => map.pan(-delta.x, -delta.y)
             }
 
             MapCircle {
@@ -113,8 +113,7 @@ ApplicationWindow {
             }
         }
 
-        MouseArea
-        {
+        MouseArea {
             anchors.fill: map
             hoverEnabled: true
             property var coordinate: map.toCoordinate(Qt.point(mouseX, mouseY))
@@ -126,11 +125,11 @@ ApplicationWindow {
                 marker.visible = true
                 console.log("[%1, %2]".arg(latitude).arg(longitude))
             }
-            Label
-            {
+            Label {
                 x: parent.mouseX - width
                 y: parent.mouseY - height - 5
-                text: "lat: %1; lon:%2".arg(parent.latitude).arg(parent.longitude)
+                text: "lat: %1; lon:%2".arg(parent.latitude).arg(
+                          parent.longitude)
                 color: "black"
             }
         }

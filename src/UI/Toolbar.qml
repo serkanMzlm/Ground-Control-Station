@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Dialogs
 
-import CCU.DeviceLink 1.0
+import GCS.DeviceLink 1.0
 
 Rectangle {
     id: toolbarRoot
@@ -21,8 +21,8 @@ Rectangle {
         anchors.leftMargin: height / 2
         anchors.verticalCenter: parent.verticalCenter
 
-        CCUImage {
-            source: "/svg/ccu_icon.svg"
+        GCSImage {
+            source: "/svg/cpu.svg"
             color: titleColor
             anchors.fill: parent
         }
@@ -30,7 +30,7 @@ Rectangle {
 
     Text {
         id: dateText
-        text: deviceLink.localTime //"01.01.2025   12:24"
+        text: deviceLink.localTime 
         font.pointSize: fontSize * 1.2
         color: textColor
         anchors {
@@ -59,7 +59,7 @@ Rectangle {
         anchors.rightMargin: parent.height * 0.15
         anchors.verticalCenter: parent.verticalCenter
 
-        CCUImage {
+        GCSImage {
             source: "/svg/reject.svg"
             color: titleColor
             anchors.fill: parent

@@ -5,10 +5,10 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 
-#include "CCUApplication.hpp"
+#include "GCSApplication.hpp"
 
 int main(int argc, char *argv[])
 {
-    CCUApplication app(argc, argv);
+    GCSApplication app(argc, argv);
     return app.exec();
 }

@@ -42,7 +42,7 @@ Item {
                 width: height
                 radius: height * 0.2
                 color: menuPanelRoot.selected_index === index ? conceptColor : buttonColor
-                CCUImage {
+                GCSImage {
                     source: modelData.iconSource !== "" ? modelData.iconSource : "/svg/more.svg"
                     color: titleColor
                     anchors.margins: parent.width * 0.12

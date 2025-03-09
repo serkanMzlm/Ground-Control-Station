@@ -1,12 +1,12 @@
 
-add_library(CCU STATIC
-    CCUApplication.cpp
-    CCUApplication.hpp
+add_library(GCS STATIC
+    GCSApplication.cpp
+    GCSApplication.hpp
 )
 
 add_subdirectory(Comms)
 
-target_link_libraries(CCU PUBLIC
+target_link_libraries(GCS PUBLIC
         Qt6::Quick
         Qt6::Core5Compat
         Qt6::Bluetooth
@@ -15,4 +15,4 @@ target_link_libraries(CCU PUBLIC
         Comms
 )
 
-target_include_directories(CCU PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(GCS PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

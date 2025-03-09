@@ -8,14 +8,14 @@
         <file alias="MapPage.qml">src/UI/MapPage.qml</file>
         <file alias="TestPage.qml">src/UI/TestPage.qml</file>
         <file alias="JoystickPage.qml">src/UI/JoystickPage.qml</file>
-        <file alias="CCUImage.qml">src/UI/CCUImage.qml</file>
-        <file alias="CCUSwitch.qml">src/UI/CCUSwitch.qml</file>
+        <file alias="GCSImage.qml">src/UI/modules/GCSImage.qml</file>
+        <file alias="GCSSwitch.qml">src/UI/modules/GCSSwitch.qml</file>
     </qresource>
     <qresource prefix="/icons">
-        <file alias="ccu_icon.ico">resources/icons/ccu_icon.ico</file>
+        <file alias="cpu.ico">resources/icons/cpu.ico</file>
     </qresource>
     <qresource prefix="/images">
-        <file alias="ccu_icon.png">resources/images/ccu_icon.png</file>
+        <file alias="cpu.png">resources/images/cpu.png</file>
         <file alias="joystick/up.png">resources/images/joystick/up.png</file>
         <file alias="joystick/triangle.png">resources/images/joystick/triangle.png</file>
         <file alias="joystick/right.png">resources/images/joystick/right.png</file>
@@ -29,7 +29,7 @@
         <file alias="joystick/x.png">resources/images/joystick/x.png</file>
     </qresource>
     <qresource prefix="/svg">
-        <file alias="ccu_icon.svg">resources/svg/ccu_icon.svg</file>
+        <file alias="cpu.svg">resources/svg/cpu.svg</file>
         <file alias="reject.svg">resources/svg/reject.svg</file>
         <file alias="console.svg">resources/svg/console.svg</file>
         <file alias="camera.svg">resources/svg/camera.svg</file>

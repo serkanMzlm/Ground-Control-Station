@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import CCU.SerialLink 1.0
 
 Item {
     id: settingsPage
@@ -11,10 +10,6 @@ Item {
     property bool isConnect: false
     property string serialPortName: ""
     property bool isConnectSerial: false
-
-    SerialLink {
-        id: serialLink
-    }
 
     Rectangle {
         id: themeRec
@@ -27,7 +22,7 @@ Item {
         anchors.topMargin: height * 0.5
         anchors.leftMargin: height * 0.5
 
-        CCUImage {
+        GCSImage {
             id: themeImage
             width: parent.height * 0.4
             height: width
@@ -47,7 +42,7 @@ Item {
             }
         }
 
-        CCUSwitch {
+        GCSSwitch {
             id: themeSwitch
             height: themeImage.height
             width: height * 4
@@ -79,15 +74,9 @@ Item {
             anchors.top: parent.top
             anchors.topMargin: height * 0.4
             anchors.rightMargin: height * 0.5
-            Connections {
-                target: serialLink
-                function onPortConnection(new_data) {
-                    isConnectSerial = new_data
-                }
-            }
         }
 
-        CCUImage {
+        GCSImage {
             id: serialImage
             width: themeImage.height
             height: width
@@ -118,7 +107,7 @@ Item {
             font.pointSize: fontSize
         }
 
-        CCUSwitch {
+        GCSSwitch {
             id: autoDetectSwitch
             height: serialImage.height
             width: height * 4
@@ -128,11 +117,7 @@ Item {
             onText: "Off"
             offText: "On"
             mouseArea.onClicked: {
-                serialLink.updatePortList()
-                serialLink.setAutoConnect(!isAutoDecet)
-                if(isAutoDecet) {
-                    serialLink.serialDisconnect()
-                }
+                _SerialManager.refreshAvailablePorts()
                 isAutoDecet = !isAutoDecet
             }
         }
@@ -169,11 +154,13 @@ Item {
                 }
 
                 Connections {
-                    target: serialLink
-                    function onPortListUpdated(ports) {
+                    target: _SerialManager
+                    function onAvailablePortsUpdated(ports) {
                         portListModel.clear()
                         for (var i = 0; i < ports.length; i++) {
-                            portListModel.append({"portName": ports[i]})
+                            portListModel.append({
+                                                     "portName": ports[i]
+                                                 })
                         }
                     }
                 }
@@ -201,7 +188,7 @@ Item {
             visible: !isAutoDecet
         }
 
-        CCUSwitch {
+        GCSSwitch {
             id: connectSwitch
             height: serialImage.height
             width: height * 6
@@ -213,13 +200,15 @@ Item {
             visible: !isAutoDecet
             mouseArea.onClicked: {
                 isConnect = !isConnect
-                if(isConnect) {
-                    var baudrate = parseInt(baudrateDataField.text.length > 0 ? baudrateDataField.text : 115200);
-                    serialLink.setBaudrate(baudrate)
-                    serialLink.setSelectedPort(serialPortName)
-                    serialLink.serialConnect()
+                if (isConnect) {
+                    var baudrate = parseInt(
+                                baudrateDataField.text.length > 0 ? baudrateDataField.text : 115200)
+                    // serialLink.setBaudrate(baudrate)
+                    // serialLink.setSelectedPort(serialPortName)
+                    // serialLink.serialConnect()
                 } else {
-                    serialLink.serialDisconnect()
+
+                    // serialLink.serialDisconnect()
                 }
             }
         }

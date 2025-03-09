@@ -1,51 +1,41 @@
-#ifndef __SERIAL_LINK_HPP__
-#define __SERIAL_LINK_HPP__
+#ifndef SERIAL_LINK_HPP
+#define SERIAL_LINK_HPP
 
 #include <QDebug>
 #include <QTimer>
 #include <QObject>
-#include <QThread>
 #include <QSerialPort>
 #include <QSerialPortInfo>
 
-#define TIME_OUT 1500    // ms
-#define DEFAULT_BAUDRATE 115200
-
-class SerialLink : public QObject{
+class SerialLink : public QObject
+{
     Q_OBJECT
 public:
     explicit SerialLink(QObject *parent = nullptr);
     ~SerialLink();
-    void init();
-    void listPortInfo();
-    void checkDeviceConnection();
-    void sleepForTimeout(int timeout_ms);
 
-    Q_INVOKABLE void readBytes();
-    Q_INVOKABLE void writeBytes(uint8_t new_data);
-    Q_INVOKABLE void serialDisconnect();
-    Q_INVOKABLE void serialConnect();
-    Q_INVOKABLE void updatePortList();
-    Q_INVOKABLE void setSelectedPort(const QString &portName);
-    Q_INVOKABLE void setBaudrate(int new_data);
-    Q_INVOKABLE void setAutoConnect(bool new_data);
+    void readByte();
+    void readBytes();
 
-signals:
-    void portListUpdated(const QStringList &ports);
-    void portConnection(bool is_connect);
+    int writeByte(uint8_t data);
+    int writeBytes(const QByteArray &data);
+
+    void disconnectFromPort();
+    bool connectToPort();
+
+    void setPortName(const QString &port_name);
+    void setBaudrate(int baudrate) { _baudrate = baudrate; };
+    bool isPortOpen() const { return _port->isOpen(); };
 
 private:
-    QSerialPort *port;
-    QStringList availablePorts;
-    QTimer* connection_timer;
+    std::unique_ptr<QSerialPort> _port;
+    QString _port_name = "";
+    int _baudrate = 115200;
 
-    uint8_t time_coef = 1;
-    QString port_name = "";
-    int baudrate = 115200;
-    bool is_auto_connect = true;
-
-    std::chrono::steady_clock::time_point prev_time;
-    std::chrono::steady_clock::duration elapsed_time;
+signals:
+    void portDisconnected();
+    void updateReadByte(uint8_t data);
+    void updateReadBytes(const QByteArray &data);
 };
 
 #endif

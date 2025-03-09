@@ -7,19 +7,19 @@ Item {
     height: mainWindow.height * 0.95
     width: mainWindow.width * 0.925
 
-    property bool value : false
+    property bool value: false
     property var iconScale: 0.25
 
-    CCUImage {
+    GCSImage {
         id: reverseImage
         width: parent.height * 0.1
         height: width
         anchors.centerIn: parent
         source: "/images/joystick/reverse_blue.png"
         overlayEnabled: false
-        mouseArea.onPressed:{
+        mouseArea.onPressed: {
             reverseImage.scale = 1.3
-            reverseImage.source = settingsPage.value ?  "/images/joystick/reverse_blue.png" : "/images/joystick/reverse_red.png"
+            reverseImage.source = settingsPage.value ? "/images/joystick/reverse_blue.png" : "/images/joystick/reverse_red.png"
             settingsPage.value = !settingsPage.value
         }
         mouseArea.onReleased: reverseImage.scale = 1.0
@@ -28,7 +28,7 @@ Item {
     Rectangle {
         id: emptyRec
         height: parent.height * 0.15
-        width:  height * 6
+        width: height * 6
         radius: height * 0.1
         color: "#D9D9D9"
         anchors.bottom: reverseImage.top
@@ -46,15 +46,14 @@ Item {
         }
         MouseArea {
             anchors.fill: parent
-            onPositionChanged:
-            {
-                if(mouseX > 0 && mouseX < emptyRec.width) {
+            onPositionChanged: {
+                if (mouseX > 0 && mouseX < emptyRec.width) {
                     ball.x = mouseX - ball.width * 0.5
                 }
-                if(mouseY > 0 && mouseY < emptyRec.height) {
+                if (mouseY > 0 && mouseY < emptyRec.height) {
                     ball.y = mouseY - ball.height * 0.5
                 }
-                rosLink.pointCallback(ball.x, ball.y)
+                _ros2.pointStateChanged(ball.x, ball.y)
             }
         }
     }
@@ -64,8 +63,9 @@ Item {
         height: settingsPage.height * 0.25
         width: height
         anchors.verticalCenter: parent.verticalCenter
-        x: settingsPage.value ? settingsPage.width * 0.5 - width * 2  : settingsPage.width * 0.5 + width
-        CCUImage {
+        x: settingsPage.value ? settingsPage.width * 0.5 - width
+                                * 2 : settingsPage.width * 0.5 + width
+        GCSImage {
             id: upImage
             width: parent.height * settingsPage.iconScale
             height: width
@@ -73,14 +73,13 @@ Item {
             overlayEnabled: false
             anchors.top: parent.top
             anchors.horizontalCenter: parent.horizontalCenter
-            mouseArea.onPressed:{
+            mouseArea.onPressed: {
                 upImage.opacity = 0.5
-                rosLink.buttonCallback(0)
+                _ros2.buttonChanged(0)
             }
-            mouseArea.onReleased: upImage.opacity  = 1.0
-
+            mouseArea.onReleased: upImage.opacity = 1.0
         }
-        CCUImage {
+        GCSImage {
             id: downImage
             width: upImage.width
             height: width
@@ -88,13 +87,13 @@ Item {
             overlayEnabled: false
             anchors.bottom: parent.bottom
             anchors.horizontalCenter: parent.horizontalCenter
-            mouseArea.onPressed:{
+            mouseArea.onPressed: {
                 downImage.opacity = 0.5
-                rosLink.buttonCallback(1)
+                _ros2.buttonChanged(1)
             }
-            mouseArea.onReleased: downImage.opacity  = 1.0
+            mouseArea.onReleased: downImage.opacity = 1.0
         }
-        CCUImage {
+        GCSImage {
             id: leftImage
             width: upImage.width
             height: width
@@ -102,13 +101,13 @@ Item {
             overlayEnabled: false
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
-            mouseArea.onPressed:{
+            mouseArea.onPressed: {
                 leftImage.opacity = 0.5
-                rosLink.buttonCallback(2)
+                _ros2.buttonChanged(2)
             }
-            mouseArea.onReleased: leftImage.opacity  = 1.0
+            mouseArea.onReleased: leftImage.opacity = 1.0
         }
-        CCUImage {
+        GCSImage {
             id: rightImage
             width: upImage.width
             height: width
@@ -116,11 +115,11 @@ Item {
             overlayEnabled: false
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
-            mouseArea.onPressed:{
+            mouseArea.onPressed: {
                 rightImage.opacity = 0.5
-                rosLink.buttonCallback(3)
+                _ros2.buttonChanged(3)
             }
-            mouseArea.onReleased: rightImage.opacity  = 1.0
+            mouseArea.onReleased: rightImage.opacity = 1.0
         }
     }
 
@@ -129,8 +128,9 @@ Item {
         height: leftRec.height
         width: height
         anchors.verticalCenter: parent.verticalCenter
-        x: settingsPage.value ? settingsPage.width * 0.5 + width  : settingsPage.width * 0.5 - width * 2
-        CCUImage {
+        x: settingsPage.value ? settingsPage.width * 0.5
+                                + width : settingsPage.width * 0.5 - width * 2
+        GCSImage {
             id: triangleImage
             width: parent.height * settingsPage.iconScale
             height: width
@@ -138,13 +138,13 @@ Item {
             overlayEnabled: false
             anchors.top: parent.top
             anchors.horizontalCenter: parent.horizontalCenter
-            mouseArea.onPressed:{
+            mouseArea.onPressed: {
                 triangleImage.scale = 1.3
-                rosLink.buttonCallback(4)
+                _ros2.buttonChanged(4)
             }
             mouseArea.onReleased: triangleImage.scale = 1.0
         }
-        CCUImage {
+        GCSImage {
             id: xImage
             width: triangleImage.width
             height: width
@@ -152,13 +152,13 @@ Item {
             overlayEnabled: false
             anchors.bottom: parent.bottom
             anchors.horizontalCenter: parent.horizontalCenter
-            mouseArea.onPressed:{
+            mouseArea.onPressed: {
                 xImage.scale = 1.3
-                rosLink.buttonCallback(5)
+                _ros2.buttonChanged(5)
             }
             mouseArea.onReleased: xImage.scale = 1.0
         }
-        CCUImage {
+        GCSImage {
             id: recImage
             width: triangleImage.width
             height: width
@@ -166,13 +166,13 @@ Item {
             overlayEnabled: false
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
-            mouseArea.onPressed:{
+            mouseArea.onPressed: {
                 recImage.scale = 1.3
-                rosLink.buttonCallback(6)
+                _ros2.buttonChanged(6)
             }
             mouseArea.onReleased: recImage.scale = 1.0
         }
-        CCUImage {
+        GCSImage {
             id: circleImage
             width: triangleImage.width
             height: width
@@ -180,9 +180,9 @@ Item {
             overlayEnabled: false
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
-            mouseArea.onPressed:{
+            mouseArea.onPressed: {
                 circleImage.scale = 1.3
-                rosLink.buttonCallback(7)
+                _ros2.buttonChanged(7)
             }
             mouseArea.onReleased: circleImage.scale = 1.0
         }
