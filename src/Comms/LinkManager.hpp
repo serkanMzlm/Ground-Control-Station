@@ -1,27 +1,25 @@
-#ifndef SERIAL_MANAGER_HPP
-#define SERIAL_MANAGER_HPP
+#ifndef LINK_MANAGER_HPP
+#define LINK_MANAGER_HPP
 
 #include "SerialLink.hpp"
 
-class SerialManager : public QObject
+class LinkManager : public QObject
 {
     Q_OBJECT
 public:
-    explicit SerialManager(QObject *parent = nullptr);
-    ~SerialManager();
+    explicit LinkManager(QObject *parent = nullptr);
+    ~LinkManager();
 
     void initialize();
-
     void showAvailablePorts() const;
     void autoDetectAndConnect();
-    
+
     Q_INVOKABLE void refreshAvailablePorts();
 
     int getTargetDevice() const { return _target_device; }
     void setTargetDevice(int new_device) { _target_device = new_device; }
+
 signals:
-    void disconnected();
-    void connected(int device);
     void availablePortsUpdated(const QStringList &ports);
 
 private:

@@ -1,28 +1,27 @@
-#include "SerialManager.hpp"
+#include "LinkManager.hpp"
 
-SerialManager::SerialManager(QObject *parent) : QObject{parent}
+LinkManager::LinkManager(QObject *parent) : QObject{parent}
 {
     initialize();
 }
 
-SerialManager::~SerialManager()
+LinkManager::~LinkManager()
 {
     _port->disconnectFromPort();
 }
 
-void SerialManager::initialize()
+void LinkManager::initialize()
 {
     _port = std::make_shared<SerialLink>(this);
     _auto_detect_timer = std::make_unique<QTimer>(this);
 
-    connect(_auto_detect_timer.get(), &QTimer::timeout, this, &SerialManager::autoDetectAndConnect);
-    connect(_port.get(), &SerialLink::portDisconnected, this, &SerialManager::disconnected);
+    connect(_auto_detect_timer.get(), &QTimer::timeout, this, &LinkManager::autoDetectAndConnect);
 
     _auto_detect_timer->setInterval(1000);
     _auto_detect_timer->start();
 }
 
-void SerialManager::showAvailablePorts() const
+void LinkManager::showAvailablePorts() const
 {
     for (const QSerialPortInfo &port_list : QSerialPortInfo::availablePorts())
     {
@@ -37,7 +36,7 @@ void SerialManager::showAvailablePorts() const
     }
 }
 
-void SerialManager::autoDetectAndConnect()
+void LinkManager::autoDetectAndConnect()
 {
     static int64_t elapsed_ms = 0;
     bool is_device_found = false;
@@ -56,33 +55,27 @@ void SerialManager::autoDetectAndConnect()
         if (is_device_found)
         {
             _time_out_coef = 2;
-            if (_port->isPortOpen())
+            if (!_port->isConnected())
             {
-                break;
-            }
-
-            _port->setPortName(port.portName());
-            _port->setBaudrate(_baudrate);
-            if (_port->connectToPort())
-            {
+                _port->setPortName(port.portName());
+                _port->setBaud(_baudrate);
+                _port->connectToPort();
                 if (port.manufacturer() == "FTDI")
                 {
+                    _port->setBoard("FTDI");
                     qDebug() << "Connected with Device [FTDI]";
                 }
                 else if (port.vendorIdentifier() == 9025)
                 {
+                    _port->setBoard("Arduino Mega");
                     qDebug() << "Connected with Device [9025]";
                 }
-            }
-            else
-            {
-                qDebug() << "Failed to connect to device: " << port.portName();
             }
 
             break;
         }
     }
-    if (!is_device_found && _port->isPortOpen())
+    if (!is_device_found && _port->isConnected())
     {
         qDebug() << "Device Connection Lost";
         _time_out_coef = 1;
@@ -92,11 +85,12 @@ void SerialManager::autoDetectAndConnect()
     _last_update_time = std::chrono::steady_clock::now();
 }
 
-void SerialManager::refreshAvailablePorts()
+void LinkManager::refreshAvailablePorts()
 {
     QStringList ports;
     const auto serial_port = QSerialPortInfo::availablePorts();
-    for (const QSerialPortInfo &info : serial_port) {
+    for (const QSerialPortInfo &info : serial_port)
+    {
         ports.append(info.portName());
     }
     emit availablePortsUpdated(ports);

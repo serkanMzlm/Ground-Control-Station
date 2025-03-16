@@ -10,8 +10,10 @@ set(COMM_FILE
     SerialLink.cpp
     DeviceLink.hpp
     DeviceLink.cpp
-    SerialManager.hpp
-    SerialManager.cpp
+    LinkManager.hpp
+    LinkManager.cpp
+    LinkInterface.cpp
+    LinkInterface.hpp
     RosManager.hpp
     RosManager.cpp
     MAVLinkProtocol.hpp

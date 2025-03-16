@@ -117,7 +117,7 @@ Item {
             onText: "Off"
             offText: "On"
             mouseArea.onClicked: {
-                _SerialManager.refreshAvailablePorts()
+                _LinkManager.refreshAvailablePorts()
                 isAutoDecet = !isAutoDecet
             }
         }
@@ -154,7 +154,7 @@ Item {
                 }
 
                 Connections {
-                    target: _SerialManager
+                    target: _LinkManager
                     function onAvailablePortsUpdated(ports) {
                         portListModel.clear()
                         for (var i = 0; i < ports.length; i++) {

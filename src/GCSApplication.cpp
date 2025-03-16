@@ -14,7 +14,7 @@ GCSApplication::GCSApplication(int argc, char** argv): QGuiApplication(argc, arg
     rclcpp::init(argc, argv);
 #endif
 
-    _port = std::make_shared<SerialManager>(this);
+    _port = std::make_shared<LinkManager>(this);
 
     commInit();
     loadQML();
@@ -35,7 +35,7 @@ void GCSApplication::loadQML() {
 void GCSApplication::commInit() {
     QQmlContext *context = _engine.rootContext();
 
-    context->setContextProperty("_SerialManager", _port.get());
+    context->setContextProperty("_LinkManager", _port.get());
 
     qmlRegisterType<DeviceLink>("GCS.DeviceLink", 1, 0, "DeviceLink");
     qmlRegisterType<RosManager>("GCS.ROSManager", 1, 0, "ROSManager");

@@ -6,7 +6,7 @@
 
 #include "DeviceLink.hpp"
 #include "RosManager.hpp"
-#include "SerialManager.hpp"
+#include "LinkManager.hpp"
 
 class GCSApplication: public QGuiApplication{
     Q_OBJECT
@@ -17,7 +17,7 @@ public:
 
 private:
     QQmlApplicationEngine _engine;
-    std::shared_ptr<SerialManager> _port;
+    std::shared_ptr<LinkManager> _port;
 };
 
 #endif

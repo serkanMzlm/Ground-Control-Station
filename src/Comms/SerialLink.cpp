@@ -1,110 +1,254 @@
 #include "SerialLink.hpp"
 
-SerialLink::SerialLink(QObject *parent) : QObject{parent}
+SerialLink::SerialLink(QObject *parent) : LinkInterface{parent}
 {
     _port = std::make_unique<QSerialPort>(this);
-    connect(_port.get(), &QSerialPort::readyRead, this, &SerialLink::readByte);
+    connect(_port.get(), &QSerialPort::readyRead, this, &SerialLink::readBytes);
 }
 
 SerialLink::~SerialLink()
 {
-    disconnectFromPort();
-}
-
-void SerialLink::disconnectFromPort()
-{
-    if (isPortOpen())
-    {
-        _port->close();
-        qDebug() << "Port Disconnect";
-        emit portDisconnected();
-    }
-}
-
-bool SerialLink::connectToPort()
-{
-    disconnectFromPort();
-    _port->setPortName(_port_name);
-    _port->setBaudRate(_baudrate);
-    _port->setDataBits(QSerialPort::Data8);
-    _port->setParity(QSerialPort::Parity::NoParity);
-    _port->setStopBits(QSerialPort::StopBits::OneStop);
-
-    if (!_port->open(QIODevice::ReadWrite))
-    {
-        qCritical() << "Failed to open port:" << _port->errorString();
-        return false;
-    }
-
-    qDebug() << "Port opened successfully!";
-    return true;
-}
-
-void SerialLink::readByte()
-{
-    if (!isPortOpen())
-    {
-        qWarning() << "Attempted to read data, but port is not open.";
-        return;
-    }
-
-    while (_port->bytesAvailable())
-    {
-        uint8_t cur_byte;
-        _port->read((char *)&cur_byte, 1);
-        emit updateReadByte(cur_byte);
-    }
+    SerialLink::disconnect();
 }
 
 void SerialLink::readBytes()
 {
-    if (!isPortOpen())
+    if (!isConnected())
     {
-        qWarning() << "Attempted to read data, but port is not open.";
+        qWarning() << "Port is not open.";
         return;
     }
 
-    emit updateReadBytes(_port->readAll());
+    const QByteArray data = _port->readAll();
+
+    if (!data.isEmpty())
+    {
+        emit dataReceived(data);
+    }
 }
 
-int SerialLink::writeBytes(const QByteArray &data)
+void SerialLink::writeBytes(const QByteArray &data)
 {
-    if (!isPortOpen())
+    if (data.isEmpty())
     {
-        qWarning() << "Attempted to write data, but port is not open.";
-        return -1;
+        errorOccurred(tr("Data to Send is Empty"));
+        return;
     }
 
-    return _port->write(data);
+    if (!isConnected())
+    {
+        errorOccurred(tr("Port is not Connected"));
+        return;
+    }
+
+    if (!_port->isWritable())
+    {
+        errorOccurred(tr("Port is not Writable"));
+        return;
+    }
+
+    qint64 total_bytes_written = 0;
+    while (total_bytes_written < data.size())
+    {
+        const qint64 bytes_written = _port->write(data.constData() + total_bytes_written, data.size() - total_bytes_written);
+        if (bytes_written == -1)
+        {
+            errorOccurred(tr("Could Not Send Data - Write Failed: %1").arg(_port->errorString()));
+            return;
+        }
+        else if (bytes_written == 0)
+        {
+            errorOccurred(tr("Could Not Send Data - Write Returned 0 Bytes"));
+            return;
+        }
+        total_bytes_written += bytes_written;
+    }
+
+    const QByteArray sent = data.first(total_bytes_written);
+    emit dataSent(sent);
 }
 
-int SerialLink::writeByte(uint8_t data)
+void SerialLink::connectToPort()
 {
-    if (!(isPortOpen()))
+    if (isConnected())
     {
-        qWarning() << "Attempted to write data, but port is not open.";
-        return -1;
+        errorOccurred("Already connected to" + _port->portName());
+        return;
     }
 
-    char dataToSend[1] = {static_cast<char>(data)};
-    qint64 bytesWritten = _port->write(dataToSend, 1);
+    _port->setPortName(_port_name);
 
-    if (bytesWritten == -1)
+    if (!_port->open(QIODevice::ReadWrite))
     {
-        qWarning() << "Could not write data to port: " << _port->errorString();
-        return -1;
+        errorOccurred("Failed to open port " + _port->portName());
+        return;
     }
 
-    _port->flush();
-    return 1;
+    _onPortConnected();
+    qDebug() << "Port opened successfully!";
 }
 
-void SerialLink::setPortName(const QString &port_name)
+void SerialLink::disconnectFromPort()
+{
+    if (!isConnected())
+    {
+        qDebug() << "Already disconnected from port";
+        return;
+    }
+
+    qDebug() << "Attempting to close port:" << _port->portName();
+    _port->close();
+    emit disconnected();
+}
+
+bool SerialLink::isConnected() const
+{
+    return (_port && _port->isOpen());
+}
+
+void SerialLink::setBaud(qint32 baud)
+{
+    if (baud != _baud)
+    {
+        _baud = baud;
+        emit baudChanged();
+    }
+}
+
+void SerialLink::setDataBits(QSerialPort::DataBits databits)
+{
+    if (databits != _data_bits)
+    {
+        _data_bits = databits;
+        emit dataBitsChanged();
+    }
+}
+void SerialLink::setFlowControl(QSerialPort::FlowControl flow_control)
+{
+    if (flow_control != _flow_control)
+    {
+        _flow_control = flow_control;
+        emit flowControlChanged();
+    }
+}
+void SerialLink::setStopBits(QSerialPort::StopBits stop_bits)
+{
+    if (stop_bits != _stop_bits)
+    {
+        _stop_bits = stop_bits;
+        emit stopBitsChanged();
+    }
+}
+void SerialLink::setParity(QSerialPort::Parity parity)
+{
+    if (parity != _parity)
+    {
+        _parity = parity;
+        emit parityChanged();
+    }
+}
+
+void SerialLink::setPortName(const QString &name)
 {
     if (QSerialPortInfo::availablePorts().isEmpty())
     {
         qWarning() << "No available serial ports found!";
         return;
     }
-    _port_name = port_name;
+
+    const QString port_name = name.trimmed();
+    if (port_name.isEmpty())
+    {
+        return;
+    }
+
+    if (port_name != _port_name)
+    {
+        _port_name = port_name;
+        emit portNameChanged();
+    }
+
+    const QString port_display_name = cleanPortDisplayName(port_name);
+    setPortDisplayName(port_display_name);
+}
+
+void SerialLink::setPortDisplayName(const QString &port_display_name)
+{
+    if (port_display_name != _port_display_name)
+    {
+        _port_display_name = port_display_name;
+        emit portDisplayNameChanged();
+    }
+}
+
+void SerialLink::setBoard(QString board)
+{
+    if(_board != board)
+    {
+        _board = board;
+    }
+}
+
+QStringList SerialLink::supportedBaudRates()
+{
+    QStringList support_baud_rate_strings;
+
+    const QList<qint32> rates = QSerialPortInfo::standardBaudRates();
+    for (qint32 rate : rates)
+    {
+        support_baud_rate_strings.append(QString::number(rate));
+    }
+
+    return support_baud_rate_strings;
+}
+
+QString SerialLink::cleanPortDisplayName(const QString &name)
+{
+    const QList<QSerialPortInfo> available_ports = QSerialPortInfo::availablePorts();
+    for (const QSerialPortInfo &port_info : available_ports)
+    {
+        if (port_info.systemLocation() == name)
+        {
+            return port_info.portName();
+        }
+    }
+
+    return QString();
+}
+
+void SerialLink::_onPortConnected()
+{
+    qDebug() << "Port connected:" << _port->portName();
+
+    _port->setDataTerminalReady(true);
+    _port->setBaudRate(_baud);
+    _port->setDataBits(_data_bits);
+    _port->setFlowControl(_flow_control);
+    _port->setStopBits(_stop_bits);
+    _port->setParity(_parity);
+
+    emit connected();
+}
+
+void SerialLink::_checkPortAvailability()
+{
+    if (!isConnected())
+    {
+        return;
+    }
+
+    const auto available_ports = QSerialPortInfo::availablePorts();
+    for (const QSerialPortInfo &info : available_ports)
+    {
+        if (info.portName() == portDisplayName())
+        {
+            _port->close();
+            break;
+        }
+    }
+}
+
+void SerialLink::_onErrorOccurred(const QString &errorString)
+{
+    qWarning() << "Communication error:" << errorString;
 }
