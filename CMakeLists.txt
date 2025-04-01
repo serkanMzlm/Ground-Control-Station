@@ -58,7 +58,7 @@ find_package(Qt${QT_VERSION_MAJOR}
 qt_standard_project_setup(REQUIRES 6.8)
 
 list(APPEND GCS_RESOURCES
-    ${CMAKE_SOURCE_DIR}/recourse.qrc
+    ${CMAKE_SOURCE_DIR}/resources.qrc
 )
 
 add_subdirectory(src)

@@ -8,8 +8,6 @@ endif()
 set(COMM_FILE
     SerialLink.hpp
     SerialLink.cpp
-    DeviceLink.hpp
-    DeviceLink.cpp
     LinkManager.hpp
     LinkManager.cpp
     LinkInterface.cpp
@@ -24,10 +22,10 @@ if(ROS2_FOUND)
     list(APPEND COMM_FILE RosLink.hpp RosLink.cpp)
 endif()
 
-add_library(Comms STATIC ${COMM_FILE})
+add_library(Communication STATIC ${COMM_FILE})
 
 if(ROS2_FOUND)
-ament_target_dependencies(Comms
+ament_target_dependencies(Communication
     rclcpp
     std_msgs
     geometry_msgs
@@ -35,9 +33,9 @@ ament_target_dependencies(Comms
 )
 endif()
 
-target_include_directories(Comms PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(Communication PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-target_link_libraries(Comms
+target_link_libraries(Communication
                 Qt${QT_VERSION_MAJOR}::Core
                 Qt${QT_VERSION_MAJOR}::Quick
                 Qt${QT_VERSION_MAJOR}::SerialPort

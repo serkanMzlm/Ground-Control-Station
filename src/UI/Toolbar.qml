@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Dialogs
 
-import GCS.DeviceLink 1.0
+import GCS.SystemDate 1.0
 
 Rectangle {
     id: toolbarRoot
@@ -9,8 +9,8 @@ Rectangle {
     width: parent.width
     height: parent.height * 0.05
 
-    DeviceLink {
-        id: deviceLink
+    SystemDate {
+        id: systemDate
     }
 
     Item {
@@ -30,7 +30,7 @@ Rectangle {
 
     Text {
         id: dateText
-        text: deviceLink.localTime 
+        text: systemDate.date
         font.pointSize: fontSize * 1.2
         color: textColor
         anchors {
@@ -63,7 +63,7 @@ Rectangle {
             source: "/svg/reject.svg"
             color: titleColor
             anchors.fill: parent
-            mouseArea.onClicked : {
+            mouseArea.onClicked: {
                 onClicked: Qt.quit()
             }
         }

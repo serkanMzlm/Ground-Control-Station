@@ -2,8 +2,6 @@ import QtQuick
 import QtLocation
 import QtPositioning
 import QtQuick.Controls
-import QtLocation
-
 
 Item {
     id: mapPage
@@ -14,6 +12,10 @@ Item {
     Plugin {
         id: mapPlugin
         name: "osm"
+        PluginParameter {
+            name: "osm.mapping.custom.host"
+            value: "https://www.openstreetmap.org/"
+        }
     }
 
     Map {
@@ -23,20 +25,22 @@ Item {
         center: QtPositioning.coordinate(39.92, 32.8)
         zoomLevel: 10
         onZoomLevelChanged: {
-            marker.radius = 1500.0 / Math.pow(2, (map.zoomLevel - 10));
+            marker.radius = 1500.0 / Math.pow(2, (map.zoomLevel - 10))
         }
+
+        activeMapType: map.supportedMapTypes[supportedMapTypes.length - 1]
 
         WheelHandler {
             id: wheel
             acceptedDevices: PointerDevice.Mouse
-            rotationScale: 1/120
+            rotationScale: 1 / 120
             property: "zoomLevel"
         }
 
         DragHandler {
             id: drag
             target: null
-            onTranslationChanged: (delta) => map.pan(-delta.x, -delta.y)
+            onTranslationChanged: delta => map.pan(-delta.x, -delta.y)
         }
 
         MapCircle {
@@ -51,8 +55,7 @@ Item {
         }
     }
 
-    MouseArea
-    {
+    MouseArea {
         anchors.fill: map
         hoverEnabled: true
         property var coordinate: map.toCoordinate(Qt.point(mouseX, mouseY))
@@ -64,8 +67,7 @@ Item {
             marker.visible = true
             console.log("[%1, %2]".arg(latitude).arg(longitude))
         }
-        Label
-        {
+        Label {
             x: parent.mouseX - width
             y: parent.mouseY - height - 5
             text: "lat: %1; lon:%2".arg(parent.latitude).arg(parent.longitude)

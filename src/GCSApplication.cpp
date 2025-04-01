@@ -37,6 +37,6 @@ void GCSApplication::commInit() {
 
     context->setContextProperty("_LinkManager", _port.get());
 
-    qmlRegisterType<DeviceLink>("GCS.DeviceLink", 1, 0, "DeviceLink");
+    qmlRegisterType<SystemDate>("GCS.SystemDate", 1, 0, "SystemDate");
     qmlRegisterType<RosManager>("GCS.ROSManager", 1, 0, "ROSManager");
 }
