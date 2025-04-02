@@ -17,7 +17,7 @@ SystemDate::~SystemDate()
 void SystemDate::update()
 {
     _local_time = std::localtime(&_current_time);
-    QString formatted = QString("%1.%2.%3 %4:%5")
+    QString formatted = QString("%1.%2.%3   %4:%5")
                                     .arg(_local_time->tm_mday, 2, 10, QChar('0'))
                                     .arg(_local_time->tm_mon + 1, 2, 10, QChar('0'))
                                     .arg(_local_time->tm_year + 1900)

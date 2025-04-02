@@ -187,4 +187,70 @@ Item {
             mouseArea.onReleased: circleImage.scale = 1.0
         }
     }
+
+    Rectangle {
+        id: joyRec
+        height: parent.height * 0.3
+        width: height
+        radius: height * 0.5
+        color: "transparent"
+        border.color: "#D9D9D9"
+        border.width: 2
+        anchors {
+            bottom: parent.bottom
+            bottomMargin: height * 0.25
+            horizontalCenter: parent.horizontalCenter
+        }
+
+        Rectangle {
+            id: centerPoint
+            x: joyRec.width / 2 - centerPoint.width * 0.5
+            y: joyRec.height / 2 - centerPoint.height * 0.5
+            width: parent.height * 0.025
+            height: width
+            radius: width * 0.5
+            color: "red"
+        }
+
+        Rectangle {
+            id: pointRec
+            x: joyRec.width / 2 - pointRec.width * 0.5
+            y: joyRec.height / 2 - pointRec.height * 0.5
+            width: parent.height * 0.15
+            height: width
+            radius: width * 0.5
+            color: "#59BDB7"
+        }
+
+        Canvas {
+            id: lineCanvas
+            anchors.fill: parent
+            z: -1
+            onPaint: {
+                var ctx = getContext("2d")
+                ctx.clearRect(0, 0, width, height)
+                ctx.beginPath()
+                ctx.moveTo(centerPoint.x + centerPoint.width / 2,
+                           centerPoint.y + centerPoint.height / 2)
+                ctx.lineTo(pointRec.x + pointRec.width / 2,
+                           pointRec.y + pointRec.height / 2)
+                ctx.strokeStyle = "#D9D9D9"
+                ctx.lineWidth = 2
+                ctx.stroke()
+            }
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            onPositionChanged: {
+                if (mouseX > 0 && mouseX < joyRec.width) {
+                    pointRec.x = mouseX - pointRec.width * 0.5
+                }
+                if (mouseY > 0 && mouseY < joyRec.height) {
+                    pointRec.y = mouseY - pointRec.height * 0.5
+                }
+                lineCanvas.requestPaint()
+            }
+        }
+    }
 }

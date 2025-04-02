@@ -12,9 +12,14 @@ Item {
     Plugin {
         id: mapPlugin
         name: "osm"
+
+        // PluginParameter {
+        //     name: "osm.mapping.custom.host"
+        //     value: "https://www.openstreetmap.org/"
+        // }
         PluginParameter {
             name: "osm.mapping.custom.host"
-            value: "https://www.openstreetmap.org/"
+            value: "https://tile.thunderforest.com/cycle/"
         }
     }
 
